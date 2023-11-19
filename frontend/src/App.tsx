@@ -5,11 +5,11 @@ import { HotkeysProvider } from 'react-hotkeys-hook';
 import { setupStore } from './store/store';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import theme from './themes/theme';
-import Loader from './components/Loader';
+import Root from './routes/Root';
 import Home from './routes/Home';
+import SignUp from './routes/SignUp';
 
-// TODO: fix
-axios.defaults.baseURL = `http://localhost:3000/api`;
+axios.defaults.baseURL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -17,7 +17,17 @@ function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <Home />,
+      element: <Root />,
+      children: [
+        {
+          path: '/',
+          element: <Home />,
+        },
+        {
+          path: '/signup',
+          element: <SignUp />,
+        },
+      ],
     },
   ]);
 
@@ -29,28 +39,7 @@ function App() {
             'card': 給"單字卡"頁面使用
         */}
         <HotkeysProvider initiallyActiveScopes={['card']}>
-          <Loader />
-          <div
-            style={{
-              minHeight: '100vh',
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundImage: 'url("/bg_1920x1080.png")',
-            }}
-          >
-            {
-              // <Menus />
-            }
-
-            <div
-              style={{
-                flex: 1,
-              }}
-              className="h-full m-2 backdrop-blur-md bg-gray-950/60 text-white border-solid border-2 border-gray-600 rounded-lg p-4"
-            >
-              <RouterProvider router={router} />
-            </div>
-          </div>
+          <RouterProvider router={router} />
         </HotkeysProvider>
       </Provider>
     </ChakraProvider>

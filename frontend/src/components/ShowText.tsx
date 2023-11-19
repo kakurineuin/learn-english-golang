@@ -64,12 +64,15 @@ function ShowText({
     }
 
     setTimeout(() => {
-      const char = chars[0];
       setChars((prevChars) => {
-        prevChars.shift();
+        if (prevChars.length === 0) {
+          return prevChars;
+        }
+
+        const char = prevChars.shift();
+        setShowText((prevShowText) => `${prevShowText}${char}`);
         return [...prevChars];
       });
-      setShowText((prevShowText) => `${prevShowText}${char}`);
     }, 20);
   }, [chars]);
 

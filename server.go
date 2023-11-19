@@ -6,9 +6,10 @@ import (
 	"learn-english-golang/handler/user"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/golang-jwt/jwt/v5"
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/joho/godotenv"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -31,6 +32,8 @@ func test(c echo.Context) error {
 }
 
 func main() {
+	loadEnv()
+
 	// 連線到資料庫
 	if err := database.ConnectDB(); err != nil {
 		log.Fatal(err)
@@ -49,11 +52,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// Login route
-	e.POST("/login", user.Login)
-
-	// Create user
-	e.POST("/user", user.CreateUser)
+	setupAPIHandlers(e)
 
 	// Unauthenticated route
 	e.GET("/", home)
@@ -72,4 +71,24 @@ func main() {
 	r.GET("", restricted)
 
 	e.Logger.Fatal(e.Start(":1323"))
+}
+
+func loadEnv() {
+	switch os.Getenv("LEARN_ENGLISH_ENV") {
+	case "PROD":
+		godotenv.Load(".env.production")
+	default:
+		godotenv.Load(".env.local")
+	}
+}
+
+func setupAPIHandlers(e *echo.Echo) {
+	// API
+	api := e.Group("/api")
+
+	// Login route
+	api.POST("/login", user.Login)
+
+	// Create user
+	api.POST("/user", user.CreateUser)
 }

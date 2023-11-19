@@ -6,32 +6,48 @@ import {
   Spacer,
   Text,
   Center,
+  useToast,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { sessionActions } from '../store/slices/sessionSlice';
 
 function Menus() {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.session.user);
+  const navigate = useNavigate();
+  const toast = useToast();
+
   const homeClickHandler = () => {
-    router.push('/');
+    navigate('/');
   };
-  const examClickHandler = () => {
-    router.push('/restricted/exam');
-  };
+  // const examClickHandler = () => {
+  //   navigate('/restricted/exam');
+  // };
   const wordClickHandler = () => {
-    router.push('/restricted/word');
+    navigate('/restricted/word');
   };
   const favoriteWordMeaningClickHandler = () => {
-    router.push('/restricted/word/favorite');
+    navigate('/restricted/word/favorite');
   };
   const WordCardClickHandler = () => {
-    router.push('/restricted/word/card');
+    navigate('/restricted/word/card');
   };
   const signUpHandler = () => {
-    router.push('/auth/signup');
+    navigate('/signup');
   };
   const signInHandler = () => {
-    signIn(undefined, { callbackUrl: '/' });
+    navigate('/signin');
   };
   const signOutHandler = () => {
-    signOut({ callbackUrl: window.location.origin });
+    dispatch(sessionActions.signOut());
+    toast({
+      title: '登出成功',
+      status: 'success',
+      isClosable: true,
+      position: 'top',
+      variant: 'subtle',
+    });
   };
 
   return (
@@ -40,13 +56,13 @@ function Menus() {
         <Heading size="md">Learn English</Heading>
       </Box>
       <Spacer />
-      {session && (
+      {user && (
         <Center mr={8}>
-          <Text fontSize="xl">{session!.user!.name}</Text>
+          <Text fontSize="xl">{user.name}</Text>
         </Center>
       )}
       <Box>
-        {!session && (
+        {!user && (
           <Button
             colorScheme="red"
             variant="outline"
@@ -57,7 +73,7 @@ function Menus() {
           </Button>
         )}
 
-        {!session && (
+        {!user && (
           <Button
             colorScheme="teal"
             variant="outline"
@@ -68,7 +84,7 @@ function Menus() {
           </Button>
         )}
 
-        {session && (
+        {user && (
           <Button
             colorScheme="teal"
             variant="outline"
@@ -88,44 +104,47 @@ function Menus() {
           首頁
         </Button>
 
-        <Button
-          colorScheme="teal"
-          variant="outline"
-          mr="2"
-          isDisabled={!session}
-          onClick={examClickHandler}
-        >
-          測驗管理 {!session && '(請先登入)'}
-        </Button>
+        {
+          // TODO: 補上
+          // <Button
+          //   colorScheme="teal"
+          //   variant="outline"
+          //   mr="2"
+          //   isDisabled={!username}
+          //   onClick={examClickHandler}
+          // >
+          //   測驗管理 {!username && '(請先登入)'}
+          // </Button>
+        }
 
         <Button
           colorScheme="teal"
           variant="outline"
           mr="2"
-          isDisabled={!session}
+          isDisabled={!user}
           onClick={wordClickHandler}
         >
-          查詢單字 {!session && '(請先登入)'}
+          查詢單字 {!user && '(請先登入)'}
         </Button>
 
         <Button
           colorScheme="teal"
           variant="outline"
           mr="2"
-          isDisabled={!session}
+          isDisabled={!user}
           onClick={favoriteWordMeaningClickHandler}
         >
-          最愛的單字解釋 {!session && '(請先登入)'}
+          最愛的單字解釋 {!user && '(請先登入)'}
         </Button>
 
         <Button
           colorScheme="teal"
           variant="outline"
           mr="2"
-          isDisabled={!session}
+          isDisabled={!user}
           onClick={WordCardClickHandler}
         >
-          單字卡 {!session && '(請先登入)'}
+          單字卡 {!user && '(請先登入)'}
         </Button>
       </Box>
     </Flex>

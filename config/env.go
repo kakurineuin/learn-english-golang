@@ -2,8 +2,6 @@ package config
 
 import (
 	"os"
-
-	_ "github.com/joho/godotenv/autoload"
 )
 
 func EnvJWTSecretKey() string {

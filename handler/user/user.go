@@ -6,6 +6,7 @@ import (
 	"learn-english-golang/config"
 	"learn-english-golang/database"
 	"learn-english-golang/model/user"
+	"learn-english-golang/util"
 	"net/http"
 	"time"
 
@@ -25,12 +26,17 @@ type JwtCustomClaims struct {
 }
 
 func CreateUser(c echo.Context) error {
-	username := c.FormValue("username")
+	jsonMap, err := util.GetJSONBody(c)
+	if err != nil {
+		return fmt.Errorf("CreateUser failed! %w", err)
+	}
+
+	username := jsonMap["username"].(string)
 
 	// 檢查使用者名稱是否已被註冊
 	var findUser user.User
 	usersCollection := database.GetCollection("users")
-	err := usersCollection.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&findUser)
+	err = usersCollection.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&findUser)
 	if err == nil {
 		return c.JSON(http.StatusConflict, echo.Map{
 			"message": "此使用者名稱已被註冊",
@@ -39,7 +45,7 @@ func CreateUser(c echo.Context) error {
 		return fmt.Errorf("CreateUser check user failed! %w", err)
 	}
 
-	password := c.FormValue("password")
+	password := jsonMap["password"].(string)
 
 	// Password Hashing
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
@@ -68,20 +74,23 @@ func CreateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"username": user.Username,
-		"role":     user.Role,
-		"token":    token,
+		"token": token,
 	})
 }
 
 func Login(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
+	jsonMap, err := util.GetJSONBody(c)
+	if err != nil {
+		return fmt.Errorf("Login failed! %w", err)
+	}
+
+	username := jsonMap["username"].(string)
+	password := jsonMap["password"].(string)
 
 	// Check user by MongoDB
 	var user user.User
 	usersCollection := database.GetCollection("users")
-	err := usersCollection.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&user)
+	err = usersCollection.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&user)
 	if err != nil {
 
 		// 查無此帳號，表示使用者輸入錯誤的帳號
@@ -110,9 +119,7 @@ func Login(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"username": username,
-		"role":     user.Role,
-		"token":    token,
+		"token": token,
 	})
 }
 
