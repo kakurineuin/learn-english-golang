@@ -93,7 +93,7 @@ function Home() {
           </ShowText>
         </ListItem>
         <ListItem>
-          <ShowText fontSize="lg">點擊標題旁的驚嘆號會顯示功能說明</ShowText>
+          <ShowText fontSize="lg">點擊標題旁邊的驚嘆號會顯示功能說明</ShowText>
         </ListItem>
       </UnorderedList>
 

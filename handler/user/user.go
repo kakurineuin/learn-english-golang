@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
@@ -61,11 +62,9 @@ func CreateUser(c echo.Context) error {
 	}
 	_, dbErr := usersCollection.InsertOne(context.TODO(), user)
 	if dbErr != nil {
-		c.Logger().Error(err)
+		log.Error(err)
 		return fmt.Errorf("CreateUser failed! error: %w", dbErr)
 	}
-
-	c.Logger().Info("CreateUser OK!")
 
 	// 產生 JWT
 	token, err := getJWTToken(username, user.Role)

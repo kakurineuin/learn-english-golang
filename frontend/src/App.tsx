@@ -8,6 +8,7 @@ import theme from './themes/theme';
 import Root from './routes/Root';
 import Home from './routes/Home';
 import SignUp from './routes/SignUp';
+import SignIn from './routes/SignIn';
 
 axios.defaults.baseURL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 axios.defaults.withCredentials = true;
@@ -26,6 +27,10 @@ function App() {
         {
           path: '/signup',
           element: <SignUp />,
+        },
+        {
+          path: '/signin',
+          element: <SignIn />,
         },
       ],
     },
